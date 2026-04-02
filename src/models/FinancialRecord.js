@@ -41,14 +41,12 @@ const financialRecordSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Index for common query patterns
 financialRecordSchema.index({ date: -1 });
 financialRecordSchema.index({ type: 1 });
 financialRecordSchema.index({ category: 1 });
 financialRecordSchema.index({ isDeleted: 1 });
 financialRecordSchema.index({ user: 1, date: -1 });
 
-// Default filter: exclude soft-deleted records
 financialRecordSchema.pre(/^find/, function (next) {
   if (!this.getOptions().includeDeleted) {
     this.where({ isDeleted: false });

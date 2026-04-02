@@ -1,7 +1,5 @@
 const Joi = require('joi');
 
-// ─── Auth ────────────────────────────────────────────────────────────────────
-
 const registerSchema = Joi.object({
   name: Joi.string().trim().min(2).max(100).required(),
   email: Joi.string().email().lowercase().required(),
@@ -14,13 +12,9 @@ const loginSchema = Joi.object({
   password: Joi.string().required(),
 });
 
-// ─── Users ───────────────────────────────────────────────────────────────────
-
 const updateStatusSchema = Joi.object({
   status: Joi.string().valid('active', 'inactive').required(),
 });
-
-// ─── Financial Records ───────────────────────────────────────────────────────
 
 const createRecordSchema = Joi.object({
   amount: Joi.number().positive().required(),
@@ -50,8 +44,6 @@ const recordQuerySchema = Joi.object({
   sortOrder: Joi.string().valid('asc', 'desc').default('desc'),
 });
 
-// ─── Validate helper ─────────────────────────────────────────────────────────
-
 const validate = (schema, source = 'body') => (req, res, next) => {
   const { error, value } = schema.validate(req[source], {
     abortEarly: false,
@@ -66,8 +58,6 @@ const validate = (schema, source = 'body') => (req, res, next) => {
   req[source] = value;
   next();
 };
-
-// ─── Exports ─────────────────────────────────────────────────────────────────
 
 module.exports = {
   registerSchema,

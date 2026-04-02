@@ -1,7 +1,5 @@
 const AppError = require('../utils/AppError');
 
-// ─── Error transformers for known Mongoose / JWT errors ───────────────────────
-
 const handleCastError = (err) =>
   new AppError(`Invalid ${err.path}: ${err.value}.`, 400);
 
@@ -14,8 +12,6 @@ const handleValidationError = (err) => {
   const messages = Object.values(err.errors).map((e) => e.message);
   return new AppError(`Validation failed: ${messages.join('. ')}`, 400);
 };
-
-// ─── Response senders ─────────────────────────────────────────────────────────
 
 const sendDevError = (err, res) => {
   res.status(err.statusCode).json({
@@ -33,8 +29,8 @@ const sendProdError = (err, res) => {
       message: err.message,
     });
   }
+  
 
-  // Non-operational: don't leak details
   console.error('UNEXPECTED ERROR:', err);
   res.status(500).json({
     status: 'error',
@@ -42,7 +38,6 @@ const sendProdError = (err, res) => {
   });
 };
 
-// ─── Central error handler ────────────────────────────────────────────────────
 
 const errorHandler = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
@@ -52,7 +47,6 @@ const errorHandler = (err, req, res, next) => {
     return sendDevError(err, res);
   }
 
-  // Transform known library errors into operational AppErrors
   let error = Object.assign(Object.create(Object.getPrototypeOf(err)), err);
 
   if (err.name === 'CastError') error = handleCastError(err);
